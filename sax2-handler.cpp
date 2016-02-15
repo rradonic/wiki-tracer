@@ -3,6 +3,9 @@
 
 #include "sax2-handler.hpp"
 
+SAX2Handler::SAX2Handler() : redirect(false) {
+}
+
 void SAX2Handler::startElement(
     const XMLCh* const uri,
     const XMLCh* const localname,
@@ -18,6 +21,10 @@ void SAX2Handler::startElement(
         deleter);
 
     this->state.push(std::string(nodeName.get()));
+
+    if(this->state.top() == "redirect") {
+        this->redirect = true;
+    }
 }
 
 void SAX2Handler::endElement(
@@ -33,8 +40,14 @@ void SAX2Handler::endElement(
         xercesc::XMLString::transcode(localname),
         deleter);
 
-    if(this->state.top() == "title") {
-        std::cout << this->text << std::endl;
+    if(this->state.top() == "page") {
+        if(!this->redirect && this->title.compare(0, 10, std::string("Wikipedia:")) != 0) {
+            std::cout << this->title << std::endl;
+        }
+
+        this->title.clear();
+        this->links.clear();
+        this->redirect = false;
     }
 
     this->state.pop();
@@ -53,5 +66,5 @@ void SAX2Handler::characters(
 
     xercesc::XMLString::transcode(chars, buffer.get(), length);
 
-    this->text.append(buffer.get());
+    this->title.append(buffer.get());
 }

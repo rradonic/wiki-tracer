@@ -10,5 +10,5 @@ target_link_libraries(wikitracer
   xerces-c)
 
 set(CMAKE_CXX_FLAGS
-  "-std=c++14"
+  "-g -std=c++14"
 )
