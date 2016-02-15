@@ -8,7 +8,3 @@ add_executable(graph-extractor
 
 target_link_libraries(graph-extractor
   xerces-c)
-
-set(CMAKE_CXX_FLAGS
-  "-g -std=c++14"
-)
