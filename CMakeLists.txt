@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-project(wikitracer)
+project(wiki-tracer)
 
 set(CMAKE_CXX_FLAGS
   "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -Werror -pedantic"
@@ -8,5 +8,5 @@ set(CMAKE_CXX_FLAGS
 
 add_subdirectory(graph-extractor)
 
-add_executable(wikitracer
+add_executable(wiki-tracer
   main.cpp)
