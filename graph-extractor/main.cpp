@@ -8,12 +8,26 @@
 
 #include "sax2-handler.hpp"
 
-int main (int argc, char* args[]) {
+void extractGraph(std::string);
+
+int main(int argc, char* args[]) {
+    if(argc < 2) {
+        std::cout << "Usage: graph-extractor [FILE]" << std::endl;
+        return -1;
+    }
+
+    std::string xmlFile(args[1]);
+
     xercesc::XMLPlatformUtils::Initialize();
 
-    const std::string xmlFile =
-        "/home/ranko/Documents/enwiki-20160204-pages-articles-multistream.xml";
+    extractGraph(xmlFile);
 
+    xercesc::XMLPlatformUtils::Terminate();
+
+    return 0;
+}
+
+void extractGraph(std::string xmlFile) {
     std::unique_ptr<xercesc::SAX2XMLReader> parser(xercesc::XMLReaderFactory::createXMLReader());
     parser->setFeature(xercesc::XMLUni::fgXercesSchema, false);
 
@@ -22,6 +36,4 @@ int main (int argc, char* args[]) {
     parser->setErrorHandler(defaultHandler.get());
 
     parser->parse(xmlFile.c_str());
-
-    return 0;
 }

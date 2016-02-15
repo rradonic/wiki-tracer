@@ -12,6 +12,10 @@ void SAX2Handler::startElement(
     const XMLCh* const qname,
     const xercesc::Attributes& attrs) {
 
+    (void)uri;
+    (void)qname;
+    (void)attrs;
+
     auto deleter = [](char* p) {
         xercesc::XMLString::release(&p);
     };
@@ -31,6 +35,9 @@ void SAX2Handler::endElement(
     const XMLCh* const uri,
     const XMLCh* const localname,
     const XMLCh* const qname) {
+
+    (void)uri;
+    (void)qname;
 
     auto deleter = [](char* p) {
         xercesc::XMLString::release(&p);
