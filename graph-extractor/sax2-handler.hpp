@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stack>
 #include <vector>
 
@@ -25,13 +27,11 @@ private:
     // a stack to track where in the XML document we are since we're using SAX2 parsing
     std::stack<std::string> state;
 
-    // page data we want to collect. we reset this after every page element is parsed.
+    // per-page data, reset after every page element is parsed
     std::string title;
     std::vector<std::string> links;
-
-    // is the current page a redirect page? we want to discard those. reset after every page element.
     bool redirect;
 
-    // buffer for text content of current element being parsed. reset after every element.
+    // buffer for text content of current element, reset after every parsed element
     std::string text;
 };
