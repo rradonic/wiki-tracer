@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <xercesc/sax2/DefaultHandler.hpp>
+#include <xercesc/util/TransService.hpp>
 
 class SAX2Handler : public xercesc::DefaultHandler {
 public:

@@ -33,15 +33,9 @@ void SAX2Handler::startElement(
     (void)qname;
     (void)attrs;
 
-    auto deleter = [](char* p) {
-        xercesc::XMLString::release(&p);
-    };
+    xercesc::TranscodeToStr transcoder(localname, "UTF-8");
 
-    std::unique_ptr<char, decltype(deleter)> nodeName(
-        xercesc::XMLString::transcode(localname),
-        deleter);
-
-    this->state.push(std::string(nodeName.get()));
+    this->state.push(std::string(reinterpret_cast<const char*>(transcoder.str())));
 
     if(this->state.top() == "redirect") {
         this->redirect = true;
@@ -54,15 +48,8 @@ void SAX2Handler::endElement(
     const XMLCh* const qname) {
 
     (void)uri;
+    (void)localname;
     (void)qname;
-
-    auto deleter = [](char* p) {
-        xercesc::XMLString::release(&p);
-    };
-
-    std::unique_ptr<char, decltype(deleter)> nodeName(
-        xercesc::XMLString::transcode(localname),
-        deleter);
 
     if(this->state.top() == "page" &&
         !this->redirect &&
@@ -104,14 +91,12 @@ void SAX2Handler::characters(
         return;
     }
 
-    std::unique_ptr<char[]> buffer(new char[length + 1]);
-
-    xercesc::XMLString::transcode(chars, buffer.get(), length);
+    xercesc::TranscodeToStr transcoder(chars, length, "UTF-8");
 
     if(this->state.top() == "title") {
-        this->title.append(buffer.get());
+        this->title.append(reinterpret_cast<const char*>(transcoder.str()));
     } else if(this->state.top() == "text") {
-        this->content.append(buffer.get());
+        this->content.append(reinterpret_cast<const char*>(transcoder.str()));
     }
 }
 
