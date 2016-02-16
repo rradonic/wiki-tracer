@@ -23,6 +23,10 @@ public:
     void characters(const XMLCh* const chars,
         const XMLSize_t length);
 
+    bool allowedTitle(std::string title) const;
+    bool allowedLink(std::string link) const;
+    bool allowed(std::string link, std::size_t pos) const;
+
 private:
     // a stack to track where in the XML document we are since we're using SAX2 parsing
     std::stack<std::string> state;
@@ -31,4 +35,6 @@ private:
     std::string title;
     std::string content;
     bool redirect;
+
+    static const char* languages[];
 };
