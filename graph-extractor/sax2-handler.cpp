@@ -48,17 +48,31 @@ void SAX2Handler::endElement(
         deleter);
 
     if(this->state.top() == "page") {
-        if(!this->redirect && this->title.compare(0, 10, std::string("Wikipedia:")) != 0) {
+        if(!this->redirect &&
+            this->title.compare(0, 5, std::string("User:")) != 0 &&
+            this->title.compare(0, 10, std::string("Wikipedia:")) != 0 &&
+            this->title.compare(0, 5, std::string("File:")) != 0 &&
+            this->title.compare(0, 10, std::string("MediaWiki:")) != 0 &&
+            this->title.compare(0, 9, std::string("Template:")) != 0 &&
+            this->title.compare(0, 5, std::string("Help:")) != 0 &&
+            this->title.compare(0, 9, std::string("Category:")) != 0 &&
+            this->title.compare(0, 7, std::string("Portal:")) != 0 &&
+            this->title.compare(0, 5, std::string("Book:")) != 0 &&
+            this->title.compare(0, 6, std::string("Draft:")) != 0 &&
+            this->title.compare(0, 10, std::string("TimedText:")) != 0 &&
+            this->title.compare(0, 7, std::string("Module:")) != 0 &&
+            this->title.compare(0, 6, std::string("Topic:")) != 0 &&
+            this->title.find("disambiguation") == std::string::npos) {
+
             std::cout << this->title << std::endl;
         }
 
         this->title.clear();
-        this->links.clear();
+        this->content.clear();
         this->redirect = false;
     }
 
     this->state.pop();
-    this->text.clear();
 }
 
 void SAX2Handler::characters(

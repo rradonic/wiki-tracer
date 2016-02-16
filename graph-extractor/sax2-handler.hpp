@@ -29,9 +29,6 @@ private:
 
     // per-page data, reset after every page element is parsed
     std::string title;
-    std::vector<std::string> links;
+    std::string content;
     bool redirect;
-
-    // buffer for text content of current element, reset after every parsed element
-    std::string text;
 };
