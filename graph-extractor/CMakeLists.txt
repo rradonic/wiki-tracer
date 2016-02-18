@@ -7,4 +7,7 @@ add_executable(graph-extractor
   main.cpp)
 
 target_link_libraries(graph-extractor
-  xerces-c)
+  xerces-c
+  icuuc
+  icuio
+  icui18n)

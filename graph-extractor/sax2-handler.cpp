@@ -1,8 +1,22 @@
 #include <iostream>
 #include <memory>
 #include <regex>
+#include <unordered_set>
+
+#include <unicode/ustream.h>
+#include <unicode/regex.h>
 
 #include "sax2-handler.hpp"
+
+namespace std {
+    template<> struct hash<icu::UnicodeString>
+    {
+        size_t operator()(const icu::UnicodeString& x) const
+        {
+            return x.hashCode();
+        }
+    };
+}
 
 const char* SAX2Handler::languages[] = {
     "aa", "ab", "ae", "af", "ak", "am", "an", "ar", "as", "av", "ay", "az", "ba", "be", "bg",
@@ -33,9 +47,9 @@ void SAX2Handler::startElement(
     (void)qname;
     (void)attrs;
 
-    xercesc::TranscodeToStr transcoder(localname, "UTF-8");
+    icu::UnicodeString nodeName(localname);
 
-    this->state.push(std::string(reinterpret_cast<const char*>(transcoder.str())));
+    this->state.push(nodeName);
 
     if(this->state.top() == "redirect") {
         this->redirect = true;
@@ -53,30 +67,33 @@ void SAX2Handler::endElement(
 
     if(this->state.top() == "page" &&
         !this->redirect &&
-        this->allowedTitle(this->title) &&
-        this->title.find("(disambiguation)") == std::string::npos) {
+        this->allowedTitle(this->title)) {
+
+        std::unordered_set<icu::UnicodeString> links;
+
+        UErrorCode status = U_ZERO_ERROR;
+        icu::RegexMatcher matcher(icu::UnicodeString("\\[\\[:?(.*?)(\\|.*?)?\\]\\]"), 0, status);
+
+        while(matcher.find()) {
+            icu::UnicodeString link = matcher.group(1, status);
+
+            if(this->allowedLink(link)) {
+                links.insert(link);
+            }
+        }
 
         std::cout << this->title << ": ";
 
-        std::regex regex("\\[\\[.*?\\]\\]");
-        std::smatch results;
-
-        while(std::regex_search(this->content, results, regex)) {
-            if(this->allowedLink(*results.begin())) {
-                std::cout << " " << *results.begin();
-            }
-
-            this->content = results.suffix();
+        for(auto const& link : links) {
+            std::cout << " [[" << link << "]]";
         }
 
-        std::cout << std::endl << std::endl;
-
-        exit(0);
+        std::cout << std::endl;
     }
 
     if(this->state.top() == "page") {
-        this->title.clear();
-        this->content.clear();
+        this->title.remove();
+        this->content.remove();
         this->redirect = false;
     }
 
@@ -91,41 +108,78 @@ void SAX2Handler::characters(
         return;
     }
 
-    xercesc::TranscodeToStr transcoder(chars, length, "UTF-8");
+    icu::UnicodeString charsUnicode(chars, length);
 
     if(this->state.top() == "title") {
-        this->title.append(reinterpret_cast<const char*>(transcoder.str()));
+        this->title.append(charsUnicode);
     } else if(this->state.top() == "text") {
-        this->content.append(reinterpret_cast<const char*>(transcoder.str()));
+        this->content.append(charsUnicode);
     }
 }
 
-bool SAX2Handler::allowedTitle(std::string title) const {
-    return this->allowed(title, 0);
+bool SAX2Handler::allowedTitle(icu::UnicodeString title) const {
+    icu::UnicodeString titleLower(title);
+    titleLower.toLower();
+
+    return this->allowed(titleLower);
 }
 
-bool SAX2Handler::allowedLink(std::string link) const {
-    return this->allowed(link, 2);
-}
+bool SAX2Handler::allowedLink(icu::UnicodeString link) const {
+    icu::UnicodeString linkLower(link);
+    linkLower.toLower();
 
-bool SAX2Handler::allowed(std::string text, std::size_t pos) const {
     return
-        text.compare(pos, 10, std::string("Wikipedia:")) != 0 &&
-        text.compare(pos, 8, std::string("Project:")) != 0 &&
-        text.compare(pos, 3, std::string("WP:")) != 0 &&
+        this->allowed(linkLower) &&
 
-        text.compare(pos, 5, std::string("File:")) != 0 &&
-        text.compare(pos, 6, std::string("Image:")) != 0 &&
+        linkLower.compare(0, 2, "m:") != 0 &&
+        linkLower.compare(0, 3, "mw:") != 0 &&
+        linkLower.compare(0, 5, "wikt:") != 0 &&
+        linkLower.compare(0, 11, "wiktionary:") != 0 &&
+        linkLower.compare(0, 2, "s:") != 0 &&
+        linkLower.compare(0, 11, "wikisource:") != 0 &&
+        linkLower.compare(0, 2, "w:") != 0 &&
+        linkLower.compare(0, 10, "wikiquote:") != 0 &&
+        linkLower.compare(0, 4, "doi:") != 0 &&
+        linkLower.compare(0, 4, "hdl:") != 0 &&
+        linkLower.compare(0, 8, "species:") != 0 &&
+        linkLower.compare(0, 2, "v:") != 0 &&
 
-        text.compare(pos, 5, std::string("User:")) != 0 &&
-        text.compare(pos, 10, std::string("MediaWiki:")) != 0 &&
-        text.compare(pos, 9, std::string("Template:")) != 0 &&
-        text.compare(pos, 5, std::string("Help:")) != 0 &&
-        text.compare(pos, 9, std::string("Category:")) != 0 &&
-        text.compare(pos, 7, std::string("Portal:")) != 0 &&
-        text.compare(pos, 5, std::string("Book:")) != 0 &&
-        text.compare(pos, 6, std::string("Draft:")) != 0 &&
-        text.compare(pos, 10, std::string("TimedText:")) != 0 &&
-        text.compare(pos, 7, std::string("Module:")) != 0 &&
-        text.compare(pos, 6, std::string("Topic:")) != 0;
+        !this->interLanguage(linkLower);
+}
+
+bool SAX2Handler::allowed(icu::UnicodeString text) const {
+    return
+        text.compare(0, 10, "wikipedia:") != 0 &&
+        text.compare(0, 8, "project:") != 0 &&
+        text.compare(0, 3, "wp:") != 0 &&
+
+        text.compare(0, 5, "file:") != 0 &&
+        text.compare(0, 6, "image:") != 0 &&
+        text.compare(0, 6, "media:") != 0 &&
+
+        text.compare(0, 5, "user:") != 0 &&
+        text.compare(0, 10, "mediaWiki:") != 0 &&
+        text.compare(0, 9, "template:") != 0 &&
+        text.compare(0, 5, "help:") != 0 &&
+        text.compare(0, 9, "category:") != 0 &&
+        text.compare(0, 7, "portal:") != 0 &&
+        text.compare(0, 5, "book:") != 0 &&
+        text.compare(0, 6, "draft:") != 0 &&
+        text.compare(0, 10, "timedText:") != 0 &&
+        text.compare(0, 7, "module:") != 0 &&
+        text.compare(0, 6, "topic:") != 0 &&
+
+        text.compare(0, 7, "list of") != 0 &&
+
+        text.indexOf("(disambiguation)") == -1;
+}
+
+bool SAX2Handler::interLanguage(icu::UnicodeString link) const {
+    for(auto const& language : SAX2Handler::languages) {
+        if(link.compare(0, 2, language) == 0) {
+            return true;
+        }
+    }
+
+    return false;
 }
