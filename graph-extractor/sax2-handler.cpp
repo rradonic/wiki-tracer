@@ -19,19 +19,19 @@ namespace std {
 }
 
 const char* SAX2Handler::languages[] = {
-    "aa", "ab", "ae", "af", "ak", "am", "an", "ar", "as", "av", "ay", "az", "ba", "be", "bg",
-    "bh", "bi", "bm", "bn", "bo", "br", "bs", "ca", "ce", "ch", "co", "cr", "cs", "cu", "cv",
-    "cy", "da", "de", "dv", "dz", "ee", "el", "en", "eo", "es", "et", "eu", "fa", "ff", "fi",
-    "fj", "fo", "fr", "fy", "ga", "gd", "gl", "gn", "gu", "gv", "ha", "he", "hi", "ho", "hr",
-    "ht", "hu", "hy", "hz", "ia", "id", "ie", "ig", "ii", "ik", "io", "is", "it", "iu", "ja",
-    "jv", "ka", "kg", "ki", "kj", "kk", "kl", "km", "kn", "ko", "kr", "ks", "ku", "kv", "kw",
-    "ky", "la", "lb", "lg", "li", "ln", "lo", "lt", "lu", "lv", "mg", "mh", "mi", "mk", "ml",
-    "mn", "mr", "ms", "mt", "my", "na", "nb", "nd", "ne", "ng", "nl", "nn", "no", "nr", "nv",
-    "ny", "oc", "oj", "om", "or", "os", "pa", "pi", "pl", "ps", "pt", "qu", "rm", "rn", "ro",
-    "ru", "rw", "sa", "sc", "sd", "se", "sg", "si", "sk", "sl", "sm", "sn", "so", "sq", "sr",
-    "ss", "st", "su", "sv", "sw", "ta", "te", "tg", "th", "ti", "tk", "tl", "tn", "to", "tr",
-    "ts", "tt", "tw", "ty", "ug", "uk", "ur", "uz", "ve", "vi", "vo", "wa", "wo", "xh", "yi",
-    "yo", "za", "zh", "zu"
+    "aa:", "ab:", "ae:", "af:", "ak:", "am:", "an:", "ar:", "as:", "av:", "ay:", "az:", "ba:", "be:", "bg:",
+    "bh:", "bi:", "bm:", "bn:", "bo:", "br:", "bs:", "ca:", "ce:", "ch:", "co:", "cr:", "cs:", "cu:", "cv:",
+    "cy:", "da:", "de:", "dv:", "dz:", "ee:", "el:", "en:", "eo:", "es:", "et:", "eu:", "fa:", "ff:", "fi:",
+    "fj:", "fo:", "fr:", "fy:", "ga:", "gd:", "gl:", "gn:", "gu:", "gv:", "ha:", "he:", "hi:", "ho:", "hr:",
+    "ht:", "hu:", "hy:", "hz:", "ia:", "id:", "ie:", "ig:", "ii:", "ik:", "io:", "is:", "it:", "iu:", "ja:",
+    "jv:", "ka:", "kg:", "ki:", "kj:", "kk:", "kl:", "km:", "kn:", "ko:", "kr:", "ks:", "ku:", "kv:", "kw:",
+    "ky:", "la:", "lb:", "lg:", "li:", "ln:", "lo:", "lt:", "lu:", "lv:", "mg:", "mh:", "mi:", "mk:", "ml:",
+    "mn:", "mr:", "ms:", "mt:", "my:", "na:", "nb:", "nd:", "ne:", "ng:", "nl:", "nn:", "no:", "nr:", "nv:",
+    "ny:", "oc:", "oj:", "om:", "or:", "os:", "pa:", "pi:", "pl:", "ps:", "pt:", "qu:", "rm:", "rn:", "ro:",
+    "ru:", "rw:", "sa:", "sc:", "sd:", "se:", "sg:", "si:", "sk:", "sl:", "sm:", "sn:", "so:", "sq:", "sr:",
+    "ss:", "st:", "su:", "sv:", "sw:", "ta:", "te:", "tg:", "th:", "ti:", "tk:", "tl:", "tn:", "to:", "tr:",
+    "ts:", "tt:", "tw:", "ty:", "ug:", "uk:", "ur:", "uz:", "ve:", "vi:", "vo:", "wa:", "wo:", "xh:", "yi:",
+    "yo:", "za:", "zh:", "zu:"
 };
 
 SAX2Handler::SAX2Handler() : redirect(false) {
@@ -72,7 +72,11 @@ void SAX2Handler::endElement(
         std::unordered_set<icu::UnicodeString> links;
 
         UErrorCode status = U_ZERO_ERROR;
-        icu::RegexMatcher matcher(icu::UnicodeString("\\[\\[:?(.*?)(\\|.*?)?\\]\\]"), 0, status);
+        icu::RegexMatcher matcher(
+            icu::UnicodeString("\\[\\[w?:?(.*?)(?:\\|.*?)?\\]\\]"),
+            this->content,
+            0,
+            status);
 
         while(matcher.find()) {
             icu::UnicodeString link = matcher.group(1, status);
@@ -85,7 +89,10 @@ void SAX2Handler::endElement(
         std::cout << this->title << ": ";
 
         for(auto const& link : links) {
-            std::cout << " [[" << link << "]]";
+            icu::UnicodeString linkCapitalized(link[0]);
+            linkCapitalized.toUpper();
+
+            std::cout << " [[" << linkCapitalized.append(link, 1, link.length() - 1) << "]]";
         }
 
         std::cout << std::endl;
@@ -130,6 +137,7 @@ bool SAX2Handler::allowedLink(icu::UnicodeString link) const {
 
     return
         this->allowed(linkLower) &&
+        !this->interLanguage(linkLower) &&
 
         linkLower.compare(0, 2, "m:") != 0 &&
         linkLower.compare(0, 3, "mw:") != 0 &&
@@ -137,14 +145,19 @@ bool SAX2Handler::allowedLink(icu::UnicodeString link) const {
         linkLower.compare(0, 11, "wiktionary:") != 0 &&
         linkLower.compare(0, 2, "s:") != 0 &&
         linkLower.compare(0, 11, "wikisource:") != 0 &&
-        linkLower.compare(0, 2, "w:") != 0 &&
+        linkLower.compare(0, 2, "q:") != 0 &&
         linkLower.compare(0, 10, "wikiquote:") != 0 &&
         linkLower.compare(0, 4, "doi:") != 0 &&
         linkLower.compare(0, 4, "hdl:") != 0 &&
         linkLower.compare(0, 8, "species:") != 0 &&
         linkLower.compare(0, 2, "v:") != 0 &&
-
-        !this->interLanguage(linkLower);
+        linkLower.compare(0, 5, "talk:") != 0 &&
+        linkLower.compare(0, 4, "ikt:") != 0 &&
+        linkLower.compare(0, 10, "iktionary:") != 0 &&
+        linkLower.compare(0, 8, "commons:") != 0 &&
+        linkLower.compare(0, 10, "ikisource:") != 0 &&
+        linkLower.compare(0, 2, "b:") != 0 &&
+        linkLower.compare(0, 4, "mos:") != 0;
 }
 
 bool SAX2Handler::allowed(icu::UnicodeString text) const {
@@ -176,7 +189,7 @@ bool SAX2Handler::allowed(icu::UnicodeString text) const {
 
 bool SAX2Handler::interLanguage(icu::UnicodeString link) const {
     for(auto const& language : SAX2Handler::languages) {
-        if(link.compare(0, 2, language) == 0) {
+        if(link.compare(0, 3, language) == 0) {
             return true;
         }
     }
