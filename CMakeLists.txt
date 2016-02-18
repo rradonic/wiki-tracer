@@ -7,6 +7,7 @@ set(CMAKE_CXX_FLAGS
 )
 
 add_subdirectory(extract-raw-graph)
+add_subdirectory(filter-links)
 
 add_executable(wiki-tracer
   main.cpp)
