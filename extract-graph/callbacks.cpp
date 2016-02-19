@@ -6,7 +6,7 @@
 #include <unicode/ustream.h>
 #include <unicode/regex.h>
 
-#include "sax2-handler.hpp"
+#include "callbacks.hpp"
 
 namespace std {
     template<> struct hash<icu::UnicodeString>
@@ -18,10 +18,10 @@ namespace std {
     };
 }
 
-SAX2Handler::SAX2Handler() : redirect(false) {
+Callbacks::Callbacks() : redirect(false) {
 }
 
-void SAX2Handler::startElement(
+void Callbacks::startElement(
     const XMLCh* const uri,
     const XMLCh* const localname,
     const XMLCh* const qname,
@@ -40,7 +40,7 @@ void SAX2Handler::startElement(
     }
 }
 
-void SAX2Handler::endElement(
+void Callbacks::endElement(
     const XMLCh* const uri,
     const XMLCh* const localname,
     const XMLCh* const qname) {
@@ -86,7 +86,7 @@ void SAX2Handler::endElement(
     this->state.pop();
 }
 
-void SAX2Handler::characters(
+void Callbacks::characters(
     const XMLCh* const chars,
     const XMLSize_t length) {
 
@@ -104,7 +104,7 @@ void SAX2Handler::characters(
     }
 }
 
-bool SAX2Handler::allowed(icu::UnicodeString text) const {
+bool Callbacks::allowed(icu::UnicodeString text) const {
     return
         text.compare(0, 10, "wikipedia:") != 0 &&
         text.compare(0, 3, "wp:") != 0 &&

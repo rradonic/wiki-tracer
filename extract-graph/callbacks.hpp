@@ -4,13 +4,12 @@
 #include <vector>
 
 #include <xercesc/sax2/DefaultHandler.hpp>
-#include <xercesc/util/TransService.hpp>
 
 #include <unicode/unistr.h>
 
-class SAX2Handler : public xercesc::DefaultHandler {
+class Callbacks : public xercesc::DefaultHandler {
     public:
-        SAX2Handler();
+        Callbacks();
 
         void startElement(
             const XMLCh* const uri,
