@@ -1,4 +1,3 @@
-#include <iostream>
 #include <memory>
 #include <regex>
 #include <unordered_set>
@@ -74,7 +73,7 @@ void Callbacks::endElement(
             u_printf("[[%.*S]] ", link.length(), link.getBuffer());
         }
 
-        std::cout << std::endl;
+        u_printf("%c\n", '\0');
     }
 
     if(this->state.top() == "page") {

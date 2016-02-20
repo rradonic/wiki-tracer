@@ -1,5 +1,6 @@
-#include <iostream>
 #include <memory>
+
+#include <unicode/ustdio.h>
 
 #include <xercesc/sax2/SAX2XMLReader.hpp>
 #include <xercesc/sax2/DefaultHandler.hpp>
@@ -12,7 +13,7 @@ void extractGraph(std::string);
 
 int main(int argc, char* args[]) {
     if(argc < 2) {
-        std::cout << "Usage: extract-graph [FILE]" << std::endl;
+        u_printf("Usage: extract-graph [FILE]\n");;
         return -1;
     }
 

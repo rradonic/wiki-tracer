@@ -1,30 +1,53 @@
-#include <iostream>
-#include <fstream>
-#include <vector>
+#include <unicode/ustdio.h>
 
-#include <unicode/unistr.h>
-#include <unicode/ustream.h>
+#include <sys/stat.h>
+#include <sys/mman.h>
+
+#include <vector>
+#include <unordered_set>
 
 int main(int argc, char* args[]) {
     if(argc < 2) {
-        std::cout << "Usage: filter-links [FILE]" << std::endl;
+        u_printf("Usage: filter-links [FILE]\n");
         return -1;
     }
 
-    std::basic_ifstream<UChar> file(args[1], std::ios::ate);
+    UFILE* file = u_fopen(args[1], "r", nullptr, nullptr);
 
-    std::iostream::pos_type pos(file.tellg());
+    struct stat fileStat;
+    fstat(fileno(u_fgetfile(file)), &fileStat);
 
-    std::cout << "File size is " << pos << " bytes" << std::endl;
+    u_printf("File size is %lld bytes\n", fileStat.st_size);
 
-    std::vector<UChar> buffer(pos);
+    u_printf("Memory mapping file...\n");
+    char* fileMap = static_cast<char*>(mmap(
+        nullptr,
+        fileStat.st_size,
+        PROT_READ,
+        MAP_PRIVATE,
+        fileno(u_fgetfile(file)),
+        0));
+    u_printf("Done!\n");
 
-    file.seekg(0, std::ios::beg);
-    file.read(buffer.data(), pos);
+    u_fclose(file);
 
-    icu::UnicodeString content(false, buffer.data(), 10000);
+    char* p = fileMap;
 
-    std::cout << "Unicode length is " << content.length() << " bytes" << std::endl;
+    for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
+        piece.set(p);
+
+        if(piece.length() <= 1) {
+            break;
+        }
+
+        icu::UnicodeString s = icu::UnicodeString::fromUTF8(piece);
+
+        u_printf("%.*S\n", s.length(), s.getBuffer());
+    };
+
+    /* for(int i = 0; i < 10000; i++) { */
+    /*     putchar(fileMap[i]); */
+    /* } */
 
     return 0;
 }

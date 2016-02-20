@@ -7,5 +7,4 @@ add_executable(filter-links
 
 target_link_libraries(filter-links
   icuuc
-  icuio
-  icui18n)
+  icuio)
