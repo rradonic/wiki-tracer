@@ -3,7 +3,7 @@
 #include <regex>
 #include <unordered_set>
 
-#include <unicode/ustream.h>
+#include <unicode/ustdio.h>
 #include <unicode/regex.h>
 
 #include "callbacks.hpp"
@@ -68,10 +68,10 @@ void Callbacks::endElement(
             }
         }
 
-        std::cout << this->title << ": ";
+        u_printf("%.*S: ", this->title.length(), this->title.getBuffer());
 
         for(auto const& link : links) {
-            std::cout << " [[" << link << "]]";
+            u_printf("[[%.*S]] ", link.length(), link.getBuffer());
         }
 
         std::cout << std::endl;

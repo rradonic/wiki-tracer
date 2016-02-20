@@ -3,7 +3,7 @@
 #include <locale>
 
 #include <unicode/unistr.h>
-#include <unicode/ustream.h>
+#include <unicode/ustdio.h>
 #include <unicode/regex.h>
 #include <unicode/schriter.h>
 
@@ -28,7 +28,7 @@ int main () {
 
     s.replace(0, 1, t);
 
-    std::cout << s << std::endl;
+    u_printf("wfp: %S\n", s.getTerminatedBuffer());
 
     /* UErrorCode status = U_ZERO_ERROR; */
 
