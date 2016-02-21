@@ -4,10 +4,12 @@ project(extract-graph)
 
 add_executable(extract-graph
   callbacks.cpp
+  ufile-wrapper.cpp
   main.cpp)
 
 target_link_libraries(extract-graph
   xerces-c
   icuuc
   icuio
-  icui18n)
+  icui18n
+  unicode-hash)

@@ -6,6 +6,7 @@ set(CMAKE_CXX_FLAGS
   "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -Wextra -Werror -pedantic"
 )
 
+add_subdirectory(unicode-hash)
 add_subdirectory(extract-graph)
 add_subdirectory(filter-links)
 

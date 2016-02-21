@@ -33,6 +33,10 @@ int main(int argc, char* args[]) {
 
     char* p = fileMap;
 
+    // the StringPiece constructor we're using loads characters until the first
+    // \0. we put a null character at the end of each line when creating the
+    // file so we're basically loading line by line here.
+
     for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
         piece.set(p);
 
@@ -44,10 +48,6 @@ int main(int argc, char* args[]) {
 
         u_printf("%.*S\n", s.length(), s.getBuffer());
     };
-
-    /* for(int i = 0; i < 10000; i++) { */
-    /*     putchar(fileMap[i]); */
-    /* } */
 
     return 0;
 }

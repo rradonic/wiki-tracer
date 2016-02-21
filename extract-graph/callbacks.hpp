@@ -1,15 +1,14 @@
 #pragma once
 
 #include <stack>
-#include <vector>
 
 #include <xercesc/sax2/DefaultHandler.hpp>
 
-#include <unicode/unistr.h>
+#include "ufile-wrapper.hpp"
 
 class Callbacks : public xercesc::DefaultHandler {
     public:
-        Callbacks();
+        Callbacks(const char* outFilePath);
 
         void startElement(
             const XMLCh* const uri,
@@ -36,5 +35,5 @@ class Callbacks : public xercesc::DefaultHandler {
         icu::UnicodeString content;
         bool redirect;
 
-        static const char* languages[];
+        UFileWrapper outFile;
 };

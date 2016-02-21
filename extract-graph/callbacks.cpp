@@ -1,23 +1,14 @@
-#include <memory>
-#include <regex>
 #include <unordered_set>
 
-#include <unicode/ustdio.h>
 #include <unicode/regex.h>
+
+#include <unicode-hash.hpp>
 
 #include "callbacks.hpp"
 
-namespace std {
-    template<> struct hash<icu::UnicodeString>
-    {
-        size_t operator()(const icu::UnicodeString& x) const
-        {
-            return x.hashCode();
-        }
-    };
-}
-
-Callbacks::Callbacks() : redirect(false) {
+Callbacks::Callbacks(const char* outFilePath) :
+    redirect(false),
+    outFile(outFilePath, "w") {
 }
 
 void Callbacks::startElement(
@@ -67,13 +58,13 @@ void Callbacks::endElement(
             }
         }
 
-        u_printf("%.*S: ", this->title.length(), this->title.getBuffer());
+        u_fprintf(this->outFile, "%.*S: ", this->title.length(), this->title.getBuffer());
 
         for(auto const& link : links) {
-            u_printf("[[%.*S]] ", link.length(), link.getBuffer());
+            u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
         }
 
-        u_printf("%c\n", '\0');
+        u_fprintf(this->outFile, "%c\n", '\0');
     }
 
     if(this->state.top() == "page") {
