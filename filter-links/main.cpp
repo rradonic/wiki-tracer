@@ -3,7 +3,6 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
-#include <vector>
 #include <unordered_set>
 
 int main(int argc, char* args[]) {

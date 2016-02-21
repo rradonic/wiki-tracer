@@ -8,16 +8,6 @@
 
 #include <unordered_set>
 
-namespace std {
-    template<> struct hash<icu::UnicodeString>
-    {
-        size_t operator()(const icu::UnicodeString& x) const
-        {
-            return x.hashCode();
-        }
-    };
-}
-
 int main () {
     icu::UnicodeString s("đrysuwfju[[it:Wikipedia: rstrst|blabla]]");
 
