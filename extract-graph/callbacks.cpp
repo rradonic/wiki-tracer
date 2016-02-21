@@ -58,7 +58,7 @@ void Callbacks::endElement(
             }
         }
 
-        u_fprintf(this->outFile, "%.*S: ", this->title.length(), this->title.getBuffer());
+        u_fprintf(this->outFile, "%.*S# ", this->title.length(), this->title.getBuffer());
 
         for(auto const& link : links) {
             u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
