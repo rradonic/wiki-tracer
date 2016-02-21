@@ -21,7 +21,7 @@ int main(int argc, char* args[]) {
 
     u_printf("Extracting graph information...\n");
     extractGraph(args[1], args[2]);
-    u_printf("Done.\n");
+    u_printf("\nDone.\n");
 
     xercesc::XMLPlatformUtils::Terminate();
 
