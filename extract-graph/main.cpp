@@ -18,7 +18,11 @@ int main(int argc, char* args[]) {
     }
 
     xercesc::XMLPlatformUtils::Initialize();
+
+    u_printf("Extracting graph information...\n");
     extractGraph(args[1], args[2]);
+    u_printf("Done.\n");
+
     xercesc::XMLPlatformUtils::Terminate();
 
     return 0;

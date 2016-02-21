@@ -65,6 +65,15 @@ void Callbacks::endElement(
         }
 
         u_fprintf(this->outFile, "%c\n", '\0');
+
+        static int counter = 0;
+
+        if(counter % 1000 == 0) {
+            u_printf(".");
+            fflush(stdout);
+        }
+
+        counter++;
     }
 
     if(this->state.top() == "page") {
