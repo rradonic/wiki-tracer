@@ -1,1 +1,1 @@
-let g:syntastic_cpp_compiler_options .= ' -Iunicode-hash'
+let g:syntastic_cpp_compiler_options .= ' -Iunicode-hash -Iufile-wrapper'

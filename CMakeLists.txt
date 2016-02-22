@@ -18,4 +18,6 @@ add_executable(wiki-tracer
 target_link_libraries(wiki-tracer
   icuuc
   icuio
-  icui18n)
+  icui18n
+
+  unicode-hash)

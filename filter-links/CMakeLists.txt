@@ -9,4 +9,6 @@ target_link_libraries(filter-links
   icuuc
   icuio
   icui18n
+
+  ufile-wrapper
   unicode-hash)
