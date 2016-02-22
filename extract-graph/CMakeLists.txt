@@ -4,7 +4,6 @@ project(extract-graph)
 
 add_executable(extract-graph
   callbacks.cpp
-  ufile-wrapper.cpp
   main.cpp)
 
 target_link_libraries(extract-graph
@@ -12,4 +11,6 @@ target_link_libraries(extract-graph
   icuuc
   icuio
   icui18n
-  unicode-hash)
+
+  unicode-hash
+  ufile-wrapper)
