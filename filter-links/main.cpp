@@ -5,7 +5,7 @@
 
 #include <unicode/regex.h>
 
-#include <unicode-hash.hpp>
+#include <wt/unicode-hash.hpp>
 #include <unordered_set>
 
 void loadTitles(char* p, std::unordered_set<icu::UnicodeString> titles) {

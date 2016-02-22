@@ -1,6 +1,6 @@
 #include <unicode/regex.h>
 
-#include <unicode-hash.hpp>
+#include <wt/unicode-hash.hpp>
 #include <unordered_set>
 
 #include "callbacks.hpp"
