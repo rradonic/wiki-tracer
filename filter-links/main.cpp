@@ -3,7 +3,83 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 
+#include <unicode/regex.h>
+
+#include <unicode-hash.hpp>
 #include <unordered_set>
+
+void loadTitles(char* p, std::unordered_set<icu::UnicodeString> titles) {
+    int counter = 0;
+
+    for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
+        piece.set(p);
+
+        if(piece.length() <= 1) {
+            break;
+        }
+
+        icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece);
+
+        UErrorCode status = U_ZERO_ERROR;
+        icu::RegexMatcher matcher(
+            icu::UnicodeString("^\\R?(.*?)#"),
+            line,
+            0,
+            status);
+
+        matcher.find();
+
+        icu::UnicodeString title = matcher.group(1, status);
+
+        titles.insert(title);
+
+        if(counter % 1000 == 0) {
+            u_printf(".");
+            fflush(stdout);
+        }
+
+        counter++;
+    };
+}
+
+void filterLinks(char* p, std::unordered_set<icu::UnicodeString> titles) {
+    (void)p;
+    (void)titles;
+
+    /* std::unordered_set<icu::UnicodeString> set; */
+    /* int counter = 0; */
+
+    /* for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) { */
+    /*     piece.set(p); */
+
+    /*     if(piece.length() <= 1) { */
+    /*         break; */
+    /*     } */
+
+    /*     icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece); */
+
+    /*     UErrorCode status = U_ZERO_ERROR; */
+    /*     icu::RegexMatcher matcher( */
+    /*         icu::UnicodeString("(\\[\\[.*?\\]\\])"), */
+    /*         line, */
+    /*         0, */
+    /*         status); */
+
+    /*     while(matcher.find()) { */
+    /*         /reminder */
+    /*         icu::UnicodeString link = matcher.group(1, status); */
+
+    /*         u_printf("%.*S\n", link.length(), link.getBuffer()); */
+
+    /*         if(counter % 1000 == 0) { */
+    /*             u_printf("."); */
+    /*             fflush(stdout); */
+    /*         } */
+    /*         counter++; */
+    /*     } */
+
+    /* }; */
+}
 
 int main(int argc, char* args[]) {
     if(argc < 2) {
@@ -16,9 +92,6 @@ int main(int argc, char* args[]) {
     struct stat fileStat;
     fstat(fileno(u_fgetfile(file)), &fileStat);
 
-    u_printf("File size is %lld bytes\n", fileStat.st_size);
-
-    u_printf("Memory mapping file...\n");
     char* fileMap = static_cast<char*>(mmap(
         nullptr,
         fileStat.st_size,
@@ -26,7 +99,6 @@ int main(int argc, char* args[]) {
         MAP_PRIVATE,
         fileno(u_fgetfile(file)),
         0));
-    u_printf("Done!\n");
 
     u_fclose(file);
 
@@ -36,17 +108,17 @@ int main(int argc, char* args[]) {
     // \0. we put a null character at the end of each line when creating the
     // file so we're basically loading line by line here.
 
-    for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
-        piece.set(p);
+    std::unordered_set<icu::UnicodeString> titles;
 
-        if(piece.length() <= 1) {
-            break;
-        }
+    u_printf("Loading page titles...");
+    loadTitles(p, titles);
+    u_printf("\nDone\n");
 
-        icu::UnicodeString s = icu::UnicodeString::fromUTF8(piece);
+    p = fileMap;
 
-        u_printf("%.*S\n", s.length(), s.getBuffer());
-    };
+    u_printf("Removing broken links...");
+    filterLinks(p, titles);
+    u_printf("\nDone\n");
 
     return 0;
 }

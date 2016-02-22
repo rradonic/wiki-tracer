@@ -7,4 +7,6 @@ add_executable(filter-links
 
 target_link_libraries(filter-links
   icuuc
-  icuio)
+  icuio
+  icui18n
+  unicode-hash)
