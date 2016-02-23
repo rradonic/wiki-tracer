@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS
 )
 
 add_subdirectory(unicode-hash)
-add_subdirectory(ufile-wrapper)
+add_subdirectory(ufile)
 
 add_subdirectory(extract-graph)
 add_subdirectory(filter-links)

@@ -5,7 +5,7 @@
 
 #include <unicode/regex.h>
 
-#include <wt/ufile-wrapper.hpp>
+#include <wt/ufile.hpp>
 #include <wt/unicode-hash.hpp>
 
 #include <unordered_set>
@@ -95,7 +95,7 @@ int main(int argc, char* args[]) {
         return -1;
     }
 
-    wt::UFileWrapper file(args[1], "r");
+    wt::UFile file(args[1], "r");
 
     struct stat fileStat;
     fstat(fileno(u_fgetfile(file)), &fileStat);

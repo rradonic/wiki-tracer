@@ -13,4 +13,4 @@ target_link_libraries(extract-graph
   icui18n
 
   unicode-hash
-  ufile-wrapper)
+  ufile)

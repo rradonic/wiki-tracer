@@ -10,5 +10,5 @@ target_link_libraries(filter-links
   icuio
   icui18n
 
-  ufile-wrapper
+  ufile
   unicode-hash)

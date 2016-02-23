@@ -4,7 +4,7 @@
 
 #include <xercesc/sax2/DefaultHandler.hpp>
 
-#include <wt/ufile-wrapper.hpp>
+#include <wt/ufile.hpp>
 
 class Callbacks : public xercesc::DefaultHandler {
     public:
@@ -36,5 +36,5 @@ class Callbacks : public xercesc::DefaultHandler {
         icu::UnicodeString content;
         bool redirect;
 
-        wt::UFileWrapper outFile;
+        wt::UFile outFile;
 };
