@@ -36,5 +36,5 @@ class Callbacks : public xercesc::DefaultHandler {
         icu::UnicodeString content;
         bool redirect;
 
-        UFileWrapper outFile;
+        wt::UFileWrapper outFile;
 };

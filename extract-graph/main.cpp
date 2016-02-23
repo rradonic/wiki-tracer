@@ -9,7 +9,18 @@
 
 #include "callbacks.hpp"
 
-void extractGraph(const char* inFilePath, const char* outFilePath);
+namespace wt {
+    void extractGraph(const char* inFilePath, const char* outFilePath) {
+        std::unique_ptr<xercesc::SAX2XMLReader> parser(xercesc::XMLReaderFactory::createXMLReader());
+        parser->setFeature(xercesc::XMLUni::fgXercesSchema, false);
+
+        std::unique_ptr<Callbacks> defaultHandler(new Callbacks(outFilePath));
+        parser->setContentHandler(defaultHandler.get());
+        parser->setErrorHandler(defaultHandler.get());
+
+        parser->parse(inFilePath);
+    }
+}
 
 int main(int argc, char* args[]) {
     if(argc < 3) {
@@ -20,21 +31,10 @@ int main(int argc, char* args[]) {
     xercesc::XMLPlatformUtils::Initialize();
 
     u_printf("Extracting graph information...\n");
-    extractGraph(args[1], args[2]);
+    wt::extractGraph(args[1], args[2]);
     u_printf("\nDone.\n");
 
     xercesc::XMLPlatformUtils::Terminate();
 
     return 0;
-}
-
-void extractGraph(const char* inFilePath, const char* outFilePath) {
-    std::unique_ptr<xercesc::SAX2XMLReader> parser(xercesc::XMLReaderFactory::createXMLReader());
-    parser->setFeature(xercesc::XMLUni::fgXercesSchema, false);
-
-    std::unique_ptr<Callbacks> defaultHandler(new Callbacks(outFilePath));
-    parser->setContentHandler(defaultHandler.get());
-    parser->setErrorHandler(defaultHandler.get());
-
-    parser->parse(inFilePath);
 }

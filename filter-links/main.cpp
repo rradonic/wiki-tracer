@@ -10,80 +10,82 @@
 
 #include <unordered_set>
 
-std::unordered_set<icu::UnicodeString> loadTitles(char* p) {
-    std::unordered_set<icu::UnicodeString> titles;
+namespace wt {
+    std::unordered_set<icu::UnicodeString> loadTitles(char* p) {
+        std::unordered_set<icu::UnicodeString> titles;
 
-    int counter = 0;
+        int counter = 0;
 
-    for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
-        piece.set(p);
+        for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
+            piece.set(p);
 
-        if(piece.length() <= 1) {
-            break;
-        }
-
-        icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece);
-
-        UErrorCode status = U_ZERO_ERROR;
-        icu::RegexMatcher matcher(
-            icu::UnicodeString("^\\R?(.*?)#"),
-            line,
-            0,
-            status);
-
-        matcher.find();
-
-        icu::UnicodeString title = matcher.group(1, status);
-
-        titles.insert(title);
-
-        if(counter % 1000 == 0) {
-            u_printf(".");
-            fflush(stdout);
-        }
-
-        counter++;
-    }
-
-    return titles;
-}
-
-void filterLinks(char* p, const std::unordered_set<icu::UnicodeString>& titles) {
-    int counter = 0;
-
-    for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
-        piece.set(p);
-
-        if(piece.length() <= 1) {
-            break;
-        }
-
-        icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece);
-
-        UErrorCode status = U_ZERO_ERROR;
-        icu::RegexMatcher matcher(
-            icu::UnicodeString("\\[\\[(.*?)\\]\\]"),
-            line,
-            0,
-            status);
-
-        while(matcher.find()) {
-            icu::UnicodeString link = matcher.group(1, status);
-
-            if(titles.find(link) != titles.end()) {
-                u_printf("+");
-                fflush(stdout);
-            } else {
-                u_printf("-");
-                fflush(stdout);
+            if(piece.length() <= 1) {
+                break;
             }
 
-            u_printf("%.*S\n", link.length(), link.getBuffer());
+            icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece);
+
+            UErrorCode status = U_ZERO_ERROR;
+            icu::RegexMatcher matcher(
+                icu::UnicodeString("^\\R?(.*?)#"),
+                line,
+                0,
+                status);
+
+            matcher.find();
+
+            icu::UnicodeString title = matcher.group(1, status);
+
+            titles.insert(title);
+
+            if(counter % 1000 == 0) {
+                u_printf(".");
+                fflush(stdout);
+            }
 
             counter++;
         }
 
-        break;
+        return titles;
+    }
+
+    void filterLinks(char* p, const std::unordered_set<icu::UnicodeString>& titles) {
+        int counter = 0;
+
+        for(StringPiece piece(p); piece.length() > 1; p += piece.length() + 1) {
+            piece.set(p);
+
+            if(piece.length() <= 1) {
+                break;
+            }
+
+            icu::UnicodeString line = icu::UnicodeString::fromUTF8(piece);
+
+            UErrorCode status = U_ZERO_ERROR;
+            icu::RegexMatcher matcher(
+                icu::UnicodeString("\\[\\[(.*?)\\]\\]"),
+                line,
+                0,
+                status);
+
+            while(matcher.find()) {
+                icu::UnicodeString link = matcher.group(1, status);
+
+                if(titles.find(link) != titles.end()) {
+                    u_printf("+");
+                    fflush(stdout);
+                } else {
+                    u_printf("-");
+                    fflush(stdout);
+                }
+
+                u_printf("%.*S\n", link.length(), link.getBuffer());
+
+                counter++;
+            }
+
+            break;
+        }
     }
 }
 
@@ -93,7 +95,7 @@ int main(int argc, char* args[]) {
         return -1;
     }
 
-    UFileWrapper file(args[1], "r");
+    wt::UFileWrapper file(args[1], "r");
 
     struct stat fileStat;
     fstat(fileno(u_fgetfile(file)), &fileStat);
@@ -113,13 +115,13 @@ int main(int argc, char* args[]) {
     // file so we're basically loading line by line here.
 
     u_printf("Loading page titles...\n");
-    std::unordered_set<icu::UnicodeString> titles = loadTitles(p);
+    std::unordered_set<icu::UnicodeString> titles = wt::loadTitles(p);
     u_printf("\nDone\n");
 
     p = fileMap;
 
     u_printf("Removing broken links...\n");
-    filterLinks(p, titles);
+    wt::filterLinks(p, titles);
     u_printf("\nDone\n");
 
     return 0;
