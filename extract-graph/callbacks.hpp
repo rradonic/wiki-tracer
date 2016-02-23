@@ -21,7 +21,8 @@ class Callbacks : public xercesc::DefaultHandler {
             const XMLCh* const localname,
             const XMLCh* const qname);
 
-        void characters(const XMLCh* const chars,
+        void characters(
+            const XMLCh* const chars,
             const XMLSize_t length);
 
         bool allowed(icu::UnicodeString text) const;
