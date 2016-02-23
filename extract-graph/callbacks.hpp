@@ -25,6 +25,7 @@ class Callbacks : public xercesc::DefaultHandler {
             const XMLSize_t length);
 
         bool allowed(icu::UnicodeString text) const;
+        void cleanUp();
 
     private:
         // a stack to track where in the XML document we are since we're using SAX2 parsing

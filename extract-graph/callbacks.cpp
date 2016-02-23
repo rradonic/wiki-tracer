@@ -39,7 +39,7 @@ void Callbacks::endElement(
     (void)localname;
     (void)qname;
 
-    if(this->state.top() == "page" && !this->redirect && this->allowed(this->title)) {
+    if(this->state.top() == "page" && this->allowed(this->title)) {
         std::unordered_set<icu::UnicodeString> links;
 
         UErrorCode status = U_ZERO_ERROR;
@@ -58,7 +58,22 @@ void Callbacks::endElement(
             }
         }
 
-        u_fprintf(this->outFile, "%.*S# ", this->title.length(), this->title.getBuffer());
+        if(this->redirect &&
+            links.size() == 1 &&
+            this->title == *(links.begin())) {
+
+            // skip redirects that differed only in capitalization since we've
+            // already lowercased everything
+
+            this->cleanUp();
+            return;
+        }
+
+        if(this->redirect) {
+            u_fprintf(this->outFile, "%.*S -> ", this->title.length(), this->title.getBuffer());
+        } else {
+            u_fprintf(this->outFile, "%.*S # ", this->title.length(), this->title.getBuffer());
+        }
 
         for(auto const& link : links) {
             u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
@@ -77,18 +92,19 @@ void Callbacks::endElement(
     }
 
     if(this->state.top() == "page") {
-        this->title.remove();
-        this->content.remove();
-        this->redirect = false;
+        this->cleanUp();
     }
 
     this->state.pop();
 }
 
-void Callbacks::characters(
-    const XMLCh* const chars,
-    const XMLSize_t length) {
+void Callbacks::cleanUp() {
+    this->title.remove();
+    this->content.remove();
+    this->redirect = false;
+}
 
+void Callbacks::characters(const XMLCh* const chars, const XMLSize_t length) {
     if(this->state.top() != "title" && this->state.top() != "text") {
         return;
     }
