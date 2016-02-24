@@ -6,9 +6,9 @@
 
 #include "callbacks.hpp"
 
-Callbacks::Callbacks(const char* outFilePath) :
+Callbacks::Callbacks(const char* path) :
     redirect(false),
-    outFile(outFilePath, "w") {
+    outFile(path, "w") {
 }
 
 void Callbacks::startElement(

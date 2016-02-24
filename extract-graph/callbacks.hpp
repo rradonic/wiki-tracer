@@ -8,7 +8,7 @@
 
 class Callbacks : public xercesc::DefaultHandler {
     public:
-        Callbacks(const char* outFilePath);
+        Callbacks(const char* path);
 
         void startElement(
             const XMLCh* const uri,

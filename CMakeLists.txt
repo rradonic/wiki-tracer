@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS
 
 add_subdirectory(libs/unicode-hash)
 add_subdirectory(libs/ufile)
+add_subdirectory(libs/pages)
 
 add_subdirectory(extract-graph)
 add_subdirectory(filter-links)

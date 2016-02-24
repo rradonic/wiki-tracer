@@ -5,8 +5,8 @@
 
 #include <unicode/regex.h>
 
-#include <wt/ufile.hpp>
 #include <wt/unicode-hash.hpp>
+#include <wt/ufile.hpp>
 
 #include <unordered_set>
 
