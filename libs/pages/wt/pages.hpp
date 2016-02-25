@@ -2,14 +2,14 @@
 
 #include <wt/ufile.hpp>
 
+#include "page-iterator.hpp"
+
 namespace wt {
     class Pages {
     public:
         Pages(const char* path);
 
-        void load();
-
     private:
-        wt::UFile inFile;
+        PageIterator iter;
     };
 }

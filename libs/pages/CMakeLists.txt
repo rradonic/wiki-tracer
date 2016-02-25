@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.6)
 project(pages)
 
 add_library(pages
+  wt/page-iterator.cpp
   wt/pages.cpp)
 
 target_link_libraries(pages

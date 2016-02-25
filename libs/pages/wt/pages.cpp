@@ -2,7 +2,7 @@
 
 namespace wt {
     Pages::Pages(const char* path) :
-        inFile(path, "r") {
+        iter(path) {
     }
 
     void load() {
