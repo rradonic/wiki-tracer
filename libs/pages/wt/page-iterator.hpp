@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIBS_PAGES_WT_PAGE_ITERATOR_HPP
+#define LIBS_PAGES_WT_PAGE_ITERATOR_HPP
 
 #include <wt/ufile.hpp>
 
@@ -15,3 +16,5 @@ namespace wt {
         UFile inFile;
     };
 }
+
+#endif

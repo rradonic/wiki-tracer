@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIBS_UFILE_WT_UFILE_HPP
+#define LIBS_UFILE_WT_UFILE_HPP
 
 #include <unicode/ustdio.h>
 
@@ -20,3 +21,5 @@ namespace wt {
         UFILE* uFile;
     };
 }
+
+#endif

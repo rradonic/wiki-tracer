@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LIBS_PAGES_WT_PAGE_HPP
+#define LIBS_PAGES_WT_PAGE_HPP
 
 #include <vector>
 
@@ -10,3 +11,5 @@ namespace wt {
         Page(icu::UnicodeString title, std::vector<icu::UnicodeString> links);
     };
 }
+
+#endif

@@ -1,7 +1,3 @@
-#include <functional>
-
-#include <unicode/unistr.h>
-
 #include "unicode-hash.hpp"
 
 namespace std {

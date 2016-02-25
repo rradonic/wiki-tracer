@@ -1,4 +1,5 @@
-#pragma once
+#ifndef EXTRACT_GRAPH_CALLBACKS_HPP
+#define EXTRACT_GRAPH_CALLBACKS_HPP
 
 #include <stack>
 
@@ -39,3 +40,5 @@ class Callbacks : public xercesc::DefaultHandler {
 
         wt::UFile outFile;
 };
+
+#endif
