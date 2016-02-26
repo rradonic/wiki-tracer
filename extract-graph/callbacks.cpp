@@ -1,10 +1,10 @@
+#include "callbacks.hpp"
+
 #include <unicode/regex.h>
 
 #include <wt/unicode-hash.hpp>
 
 #include <unordered_set>
-
-#include "callbacks.hpp"
 
 Callbacks::Callbacks(const char* path) :
     redirect(false),

@@ -1,7 +1,8 @@
 #include "page.hpp"
 
 namespace wt {
-    Page::Page(const char* path) :
-        inFile(path, "r") {
+    Page::Page(icu::UnicodeString title, std::vector<icu::UnicodeString> links) :
+        title(title),
+        links(links) {
     }
 }

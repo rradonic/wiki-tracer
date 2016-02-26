@@ -17,8 +17,4 @@ add_executable(wiki-tracer
   main.cpp)
 
 target_link_libraries(wiki-tracer
-  icuuc
-  icuio
-  icui18n
-
-  unicode-hash)
+  pages)

@@ -9,6 +9,9 @@ namespace wt {
     class Page {
     public:
         Page(icu::UnicodeString title, std::vector<icu::UnicodeString> links);
+
+        icu::UnicodeString title;
+        std::vector<icu::UnicodeString> links;
     };
 }
 

@@ -1,3 +1,5 @@
+#include "callbacks.hpp"
+
 #include <memory>
 
 #include <unicode/ustdio.h>
@@ -6,8 +8,6 @@
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax2/XMLReaderFactory.hpp>
 #include <xercesc/util/XMLString.hpp>
-
-#include "callbacks.hpp"
 
 namespace wt {
     void extractGraph(const char* inFilePath, const char* outFilePath) {
