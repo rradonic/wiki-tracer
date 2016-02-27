@@ -9,6 +9,7 @@ add_library(pages
 
 target_link_libraries(pages
   icuuc
+  icui18n
   ufile)
 
 target_include_directories(pages

@@ -8,6 +8,7 @@
 namespace wt {
     class Page {
     public:
+        Page();
         Page(icu::UnicodeString title, std::vector<icu::UnicodeString> links);
 
         icu::UnicodeString title;
