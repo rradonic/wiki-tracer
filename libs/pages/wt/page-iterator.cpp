@@ -17,7 +17,7 @@ namespace wt {
         position(stream),
         good(true) {
 
-            this->loadPage();
+        this->loadPage();
     }
 
     bool wt::PageIterator::operator==(const wt::PageIterator& other) {

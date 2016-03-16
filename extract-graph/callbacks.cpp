@@ -79,7 +79,7 @@ void Callbacks::endElement(
             u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
         }
 
-        u_fprintf(this->outFile, "%c\n", '\0');
+        u_fprintf(this->outFile, "\n");
 
         static int counter = 0;
 
