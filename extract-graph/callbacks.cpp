@@ -3,6 +3,7 @@
 #include <unicode/regex.h>
 
 #include <wt/unicode-hash.hpp>
+#include <wt/scope-guard.hpp>
 
 #include <unordered_set>
 
@@ -39,63 +40,66 @@ void Callbacks::endElement(
     (void)localname;
     (void)qname;
 
-    if(this->state.top() == "page" && this->allowed(this->title)) {
-        std::unordered_set<icu::UnicodeString> links;
-
-        UErrorCode status = U_ZERO_ERROR;
-        icu::RegexMatcher matcher(
-            icu::UnicodeString("\\[\\[w?:?(.*?)(?:\\|.*?)?\\]\\]"),
-            this->content,
-            0,
-            status);
-
-        while(matcher.find()) {
-            icu::UnicodeString link = matcher.group(1, status);
-            link.toLower();
-
-            if(this->allowed(link)) {
-                links.insert(link);
-            }
-        }
-
-        if(this->redirect &&
-            links.size() == 1 &&
-            this->title == *(links.begin())) {
-
-            // skip redirects that differed only in capitalization since we've
-            // already lowercased everything
-
+    wt::ScopeGuard guard([this]() {
+        if(this->state.top() == "page") {
             this->cleanUp();
-            return;
         }
 
-        if(this->redirect) {
-            u_fprintf(this->outFile, "%.*S -> ", this->title.length(), this->title.getBuffer());
-        } else {
-            u_fprintf(this->outFile, "%.*S # ", this->title.length(), this->title.getBuffer());
-        }
+        this->state.pop();
+    });
 
-        for(auto const& link : links) {
-            u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
-        }
-
-        u_fprintf(this->outFile, "\n");
-
-        static int counter = 0;
-
-        if(counter % 1000 == 0) {
-            u_printf(".");
-            fflush(stdout);
-        }
-
-        counter++;
+    if(this->state.top() != "page" || !this->allowed(this->title)) {
+        return;
     }
 
-    if(this->state.top() == "page") {
-        this->cleanUp();
+    std::unordered_set<icu::UnicodeString> links;
+
+    UErrorCode status = U_ZERO_ERROR;
+    icu::RegexMatcher matcher(
+        icu::UnicodeString("\\[\\[w?:?(.*?)(?:\\|.*?)?\\]\\]"),
+        this->content,
+        0,
+        status);
+
+    while(matcher.find()) {
+        icu::UnicodeString link = matcher.group(1, status);
+        link.toLower();
+
+        if(this->allowed(link)) {
+            links.insert(link);
+        }
     }
 
-    this->state.pop();
+    if(this->redirect &&
+        links.size() == 1 &&
+        this->title == *(links.begin())) {
+
+        // skip redirects that differed only in capitalization since we've
+        // already lowercased everything
+
+        return;
+    }
+
+    if(this->redirect) {
+        u_fprintf(this->outFile, "%.*S -> ", this->title.length(), this->title.getBuffer());
+    } else {
+        u_fprintf(this->outFile, "%.*S # ", this->title.length(), this->title.getBuffer());
+    }
+
+    for(auto const& link : links) {
+        u_fprintf(this->outFile, "[[%.*S]] ", link.length(), link.getBuffer());
+    }
+
+    u_fprintf(this->outFile, "\n");
+
+    static int counter = 0;
+
+    if(counter % 1000 == 0) {
+        u_printf(".");
+        fflush(stdout);
+    }
+
+    counter++;
 }
 
 void Callbacks::cleanUp() {

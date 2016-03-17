@@ -22,7 +22,9 @@ int main(int argc, char* args[]) {
         PROT_READ,
         MAP_PRIVATE,
         fileno(u_fgetfile(file)),
-        0));
+        1));
+
+    u_printf("%d\n", fileMap);
 
     // the StringPiece constructor we're using loads characters until the first
     // \0. we put a null character at the end of each line when creating the
@@ -30,7 +32,7 @@ int main(int argc, char* args[]) {
 
     wt::PageIterator iter(fileMap);
 
-    for(int i = 0; i < 10; i++) {
+    while(true) {
         wt::Page page = *iter;
 
         u_printf("%.*S\n", page.title.length(), page.title.getBuffer());

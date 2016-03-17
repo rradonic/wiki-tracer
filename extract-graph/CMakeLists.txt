@@ -12,4 +12,5 @@ target_link_libraries(extract-graph
   icuio
   icui18n
   unicode-hash
-  ufile)
+  ufile
+  scope-guard)
