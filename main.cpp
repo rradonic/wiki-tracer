@@ -7,7 +7,7 @@
 
 int main(int argc, char* args[]) {
     if(argc < 2) {
-        u_printf("Usage: filter-links [FILE]\n");
+        u_printf("Usage: wiki-tracer [FILE]\n");
         return -1;
     }
 

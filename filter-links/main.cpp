@@ -27,7 +27,7 @@ namespace wt {
 
             UErrorCode status = U_ZERO_ERROR;
             icu::RegexMatcher matcher(
-                icu::UnicodeString("^\\R?(.*?)#"),
+                icu::UnicodeString("^\\R?(.*?) #"),
                 line,
                 0,
                 status);
@@ -36,7 +36,9 @@ namespace wt {
 
             icu::UnicodeString title = matcher.group(1, status);
 
-            titles.insert(title);
+            if(title.length() > 0) {
+                titles.insert(title);
+            }
 
             if(counter % 1000 == 0) {
                 u_printf(".");
@@ -83,8 +85,6 @@ namespace wt {
 
                 counter++;
             }
-
-            break;
         }
     }
 }
