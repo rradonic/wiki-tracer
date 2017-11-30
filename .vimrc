@@ -1,2 +1,1 @@
-let g:syntastic_cpp_include_dirs = ['libs/unicode-hash', 'libs/ufile', 'libs/pages', 'libs/scope-guard']
-let g:syntastic_cpp_check_header = 1
+let g:ale_cpp_gcc_options = '-std=c++14 -Wall -Wextra -Werror -pedantic -g -Ilibs/unicode-hash -Ilibs/ufile -Ilibs/pages -Ilibs/scope-guard'
